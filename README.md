@@ -14,7 +14,6 @@ Bienvenue sur notre repo de la Plateforme de Recrutement Digitale ! Cette platef
 ## Technologies Utilisées
 
 - **Spring Boot** : Framework backend pour construire des applications web robustes et évolutives.
-- **Angular** : Framework frontend pour créer des interfaces utilisateur dynamiques et interactives.
 - **MySQL** : Système de gestion de base de données relationnelle pour stocker les données de l'application.
 - **Spring Security** : Fournit des fonctionnalités d'authentification et d'autorisation.
 - **JWT (JSON Web Tokens)** : Transmettez des informations de manière sécurisée entre les parties sous forme d'objet JSON.
