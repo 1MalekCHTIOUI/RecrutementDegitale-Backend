@@ -35,4 +35,9 @@ public class CvController {
 
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/{cvId}")
+    public CV getCV(@PathVariable Long cvId) throws Exception {
+        return cvService.getCV(cvId);
+    }
 }
