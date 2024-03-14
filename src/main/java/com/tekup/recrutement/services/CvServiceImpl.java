@@ -32,7 +32,9 @@ public class CvServiceImpl implements CvService {
             String downloadUrl = generateDownloadUrl(uuid, fileName);
             CV cv = new CV(fileName, uuid, downloadUrl, file.getBytes());
 
-            return cvRepository.save(cv);
+            CV test = cvRepository.save(cv);
+            test.setData(null);
+            return test;
         } catch (Exception e) {
             throw new Exception("Could not save File: " + e.getMessage());
         }
@@ -43,11 +45,9 @@ public class CvServiceImpl implements CvService {
     }
 
     @Override
-    public CV getCV(Long cvId) throws Exception {
-        return cvRepository
-                .findById(cvId)
-                .orElseThrow(
-                        () -> new Exception("CV not found with Id: " + cvId));
+    public CV getCV(Long cvId) {
+        Optional<CV> cvOptional = cvRepository.findById(cvId);
+        return cvOptional.orElse(null);
     }
 
     public Optional<CV> findByUuid(String uuid) {
