@@ -3,12 +3,15 @@ package com.tekup.recrutement.controllers;
 import com.tekup.recrutement.entities.CV;
 import com.tekup.recrutement.services.CvServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/cv")
 public class CvController {
@@ -17,8 +20,16 @@ public class CvController {
     private CvServiceImpl cvService;
 
     @PostMapping("/upload")
-    public CV uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        return cvService.saveCV(file);
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (!file.getContentType().equals("application/pdf")) {
+            return new ResponseEntity<>("Invalid file type. Only PDF file is allowed.", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            CV cv = cvService.saveCV(file);
+            return new ResponseEntity<>(cv, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not save file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/download/{uuid}/{fileName:.+}")
@@ -39,5 +50,10 @@ public class CvController {
     @GetMapping("/{cvId}")
     public CV getCV(@PathVariable Long cvId) throws Exception {
         return cvService.getCV(cvId);
+    }
+
+    @GetMapping
+    public List<CV> getAllCVs() {
+        return cvService.getAllCVs();
     }
 }
