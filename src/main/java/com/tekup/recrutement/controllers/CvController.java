@@ -8,10 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/cv")
 public class CvController {
@@ -20,12 +22,16 @@ public class CvController {
     private CvServiceImpl cvService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
-        if (!file.getContentType().equals("application/pdf")) {
+    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file) {
+        if (!Objects.equals(file.getContentType(), "application/pdf")) {
             return new ResponseEntity<>("Invalid file type. Only PDF file is allowed.", HttpStatus.BAD_REQUEST);
         }
         try {
-            CV cv = cvService.saveCV(file);
+            /* HARDCODED KEYWORDS WAITING FOR OFFER ENTITY TO BE CREATED */
+
+            final List<String> tempKeywords = Arrays.asList("java", "spring", "angular", "react", "node", "javascript", "sql", "html", "css", "github", "git");
+
+            CV cv = cvService.saveCV(file, tempKeywords);
             return new ResponseEntity<>(cv, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not save file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -52,8 +58,20 @@ public class CvController {
         return cvService.getCV(cvId);
     }
 
+
+    @GetMapping("/pdf/{cvId}")
+    public ResponseEntity<?> getPDF(@PathVariable Long cvId) throws Exception {
+        return cvService.getPDFfromCv(cvId);
+    }
+
     @GetMapping
     public List<CV> getAllCVs() {
         return cvService.getAllCVs();
     }
+
+    @GetMapping("/test/{id}")
+    public String test(@PathVariable Long id) {
+        return cvService.extractTextFromPDF(cvService.getCV(id).getData());
+    }
+
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -23,12 +24,18 @@ public class CV {
     @Column(name = "data", columnDefinition = "LONGBLOB")
     private byte[] data;
     private Date uploadDate;
+    private int score;
+    private List<String> skillsFound;
+    private String specialite;
 
-    public CV(String fileName, String uuid, String url, byte[] bytes, Date uploadDate) {
+    public CV(String fileName, String uuid, String url, byte[] bytes, Date uploadDate, int score, List<String> skillsFound, String specialite) {
         this.nom = fileName;
         this.uuid = uuid;
         this.url = url;
         this.data = bytes;
         this.uploadDate = uploadDate;
+        this.score = score;
+        this.skillsFound = skillsFound;
+        this.specialite = specialite;
     }
 }
