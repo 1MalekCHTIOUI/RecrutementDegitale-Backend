@@ -29,12 +29,14 @@ public class CvController {
         try {
             /* HARDCODED KEYWORDS WAITING FOR OFFER ENTITY TO BE CREATED */
 
-            final List<String> tempKeywords = Arrays.asList("java", "spring", "angular", "react", "node", "javascript", "sql", "html", "css", "github", "git");
+            final List<String> tempKeywords = Arrays.asList("java", "spring", "angular", "react", "node", "javascript",
+                    "sql", "html", "css", "github", "git");
 
             CV cv = cvService.saveCV(file, tempKeywords);
             return new ResponseEntity<>(cv, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Could not save file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>(e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -57,7 +59,6 @@ public class CvController {
     public CV getCV(@PathVariable Long cvId) throws Exception {
         return cvService.getCV(cvId);
     }
-
 
     @GetMapping("/pdf/{cvId}")
     public ResponseEntity<?> getPDF(@PathVariable Long cvId) throws Exception {

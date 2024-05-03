@@ -17,12 +17,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
-
 @Service
 public class CvServiceImpl implements CvService {
     @Autowired
     private CvRepository cvRepository;
-
 
     @Override
     public CV saveCV(MultipartFile file, List<String> keywords) throws Exception {
@@ -43,10 +41,13 @@ public class CvServiceImpl implements CvService {
             cv.setScore((int) ((Map<String, Object>) score).get("score"));
             cv.setScore(cv.getScore() + eng.score);
             cv.setSkillsFound((List<String>) ((Map<String, Object>) score).get("keywords"));
-
+            // if (cv.getScore() == 0) {
+            // throw new Exception("Les exigences de l'offre ne sont pas remplies");
+            // }
             CV test = cvRepository.save(cv);
             test.setData(null);
             return test;
+
         } catch (Exception e) {
             throw new Exception("Could not save File: " + e.getMessage());
         }
@@ -62,11 +63,12 @@ public class CvServiceImpl implements CvService {
         return cvOptional.orElse(null);
     }
 
-    private static final HashMap<String, Integer> ENGINEERING_KEYWORDS = new HashMap<String, Integer>() {{
-        put("ingénieur", 5);
-        put("développeur", 2);
-    }};
-
+    private static final HashMap<String, Integer> ENGINEERING_KEYWORDS = new HashMap<String, Integer>() {
+        {
+            put("ingénieur", 5);
+            put("développeur", 2);
+        }
+    };
 
     private static Engineer scoreParSpec(String cvText) {
         int score = 0;
@@ -86,7 +88,6 @@ public class CvServiceImpl implements CvService {
         eng.score = score;
         return eng;
     }
-
 
     @Override
     public ResponseEntity<?> getPDFfromCv(Long cvId) {
@@ -113,7 +114,6 @@ public class CvServiceImpl implements CvService {
         return cvRepository.findAll();
     }
 
-
     public String extractTextFromPDF(byte[] pdfData) {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfData))) {
             if (!document.isEncrypted()) {
@@ -139,10 +139,12 @@ public class CvServiceImpl implements CvService {
             }
         }
         int finalScore = score;
-        return new HashMap<String, Object>() {{
-            put("score", finalScore);
-            put("keywords", foundKeywords);
-        }};
+        return new HashMap<String, Object>() {
+            {
+                put("score", finalScore);
+                put("keywords", foundKeywords);
+            }
+        };
     }
 
     static class Engineer {
