@@ -11,4 +11,6 @@ public interface CvRepository extends JpaRepository<CV, Long> {
     int deleteAllByIsAcceptedBySystem(boolean acceptedBySystem);
 
     int deleteAllByIsAcceptedBySystemAndDeletionDateNotNull(boolean acceptedBySystem);
+
+    int deleteAllByArchived(boolean archived);
 }

@@ -1,8 +1,11 @@
 package com.tekup.recrutement.services;
 
 import com.tekup.recrutement.dao.CvRepository;
+import com.tekup.recrutement.dao.OffreRepository;
+import com.tekup.recrutement.dto.OffreDTO;
 import com.tekup.recrutement.dto.UserDTO;
 import com.tekup.recrutement.entities.CV;
+import com.tekup.recrutement.entities.Offre;
 import com.tekup.recrutement.entities.User;
 
 import jakarta.annotation.PostConstruct;
@@ -32,15 +35,24 @@ public class CvServiceImpl implements CvService {
 
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private OffreRepository offreRep;
 
     @SuppressWarnings("unchecked")
     @Override
-    public CV saveCV(MultipartFile file, Long userId, List<String> obligatoryKeywords, List<String> optionalKeywords)
+    public CV saveCV(MultipartFile file, Long userId, Long offreId,
+            List<String> optionalKeywords)
             throws Exception {
 
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         try {
             User user = userService.getUser(userId);
+            Optional<Offre> offre = offreRep.findById(offreId);
+
+            String[] competences = offre.get().getCompetences().split(",");
+
+            List<String> obligatorySkills = Arrays.asList(competences);
+
             if (fileName.contains("..")) {
                 throw new Exception("Filename contains invalid path sequence " + fileName);
             }
@@ -51,9 +63,9 @@ public class CvServiceImpl implements CvService {
             LocalDate oneWeekAfter = today.plusDays(7); // Add 7 days
             Date oneWeekAfterDate = java.sql.Date.valueOf(oneWeekAfter);
             CV cv = new CV(fileName, uuid, downloadUrl, file.getBytes(), new Date(), null, 0, null, "",
-                    false, false, user);
+                    false, false, user, offre.orElse(null));
 
-            Object scoreParTech = giveScore(cv.getData(), obligatoryKeywords, optionalKeywords);
+            Object scoreParTech = giveScore(cv.getData(), obligatorySkills, optionalKeywords);
 
             Engineer eng = scoreParSpec(extractTextFromPDF(cv.getData()));
 
@@ -110,6 +122,21 @@ public class CvServiceImpl implements CvService {
                 return new ResponseEntity<>("CV status is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>("Error deleting CVs: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteArchivedCVs() {
+        try {
+            int x = cvRepository.deleteAllByArchived(true);
+            if (x > 0)
+                return ResponseEntity.ok().build();
+            else
+                return new ResponseEntity<>("No archived CVs found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error deleting archived CVs: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -226,14 +253,16 @@ public class CvServiceImpl implements CvService {
         List<String> foundKeywords = new ArrayList<String>();
         int score = 0;
         for (String keyword : obligatoryKeywords) {
-            if (text.toLowerCase().contains(keyword)) {
+            System.out.println(keyword);
+
+            if (text.toLowerCase().contains(keyword.toLowerCase())) {
                 foundKeywords.add(keyword);
                 score++;
             }
         }
         if (score > 0) {
             for (String keyword : optionalKeywords) {
-                if (text.toLowerCase().contains(keyword)) {
+                if (text.toLowerCase().contains(keyword.toLowerCase())) {
                     foundKeywords.add(keyword);
                     score++;
                 }

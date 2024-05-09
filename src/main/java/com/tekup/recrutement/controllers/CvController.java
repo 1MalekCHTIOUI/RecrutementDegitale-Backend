@@ -22,18 +22,15 @@ public class CvController {
     private CvServiceImpl cvService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId,
+            @RequestParam("offreId") Long offreId) {
         if (!Objects.equals(file.getContentType(), "application/pdf")) {
             return new ResponseEntity<>("Invalid file type. Only PDF file is allowed.", HttpStatus.BAD_REQUEST);
         }
         try {
-            /* HARDCODED KEYWORDS WAITING FOR OFFER ENTITY TO BE CREATED */
-
             final List<String> optionalKeywords = Arrays.asList("github", "git");
-            final List<String> obligatoryKeywords = Arrays.asList("java", "spring", "angular", "typescript",
-                    "javascript");
 
-            CV cv = cvService.saveCV(file, userId, obligatoryKeywords, optionalKeywords);
+            CV cv = cvService.saveCV(file, userId, offreId, optionalKeywords);
             return new ResponseEntity<>(cv, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(),
@@ -84,6 +81,11 @@ public class CvController {
     @DeleteMapping("/status/{status}")
     public ResponseEntity<?> deleteCV(@PathVariable("status") boolean status) {
         return cvService.deleteCVs(status);
+    }
+
+    @DeleteMapping("/archived")
+    public ResponseEntity<?> deleteArchivedCVs() {
+        return cvService.deleteArchivedCVs();
     }
 
     // @DeleteMapping("/autoDelete")

@@ -9,7 +9,8 @@ import java.util.Optional;
 
 public interface CvService {
 
-    CV saveCV(MultipartFile file, Long userId, List<String> obligatoryKeywords, List<String> optionalKeywords)
+    CV saveCV(MultipartFile file, Long userId, Long offreId,
+            List<String> optionalKeywords)
             throws Exception;
 
     Optional<CV> findByUuid(String uuid);
@@ -23,6 +24,8 @@ public interface CvService {
     ResponseEntity<?> deleteCV(Long cvId);
 
     ResponseEntity<?> deleteCVs(boolean status);
+
+    ResponseEntity<?> deleteArchivedCVs();
 
     // ResponseEntity<?> deleteRejectedCVsWithNoAction();
 
