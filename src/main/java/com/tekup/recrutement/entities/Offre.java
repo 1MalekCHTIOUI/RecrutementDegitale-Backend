@@ -1,5 +1,7 @@
 package com.tekup.recrutement.entities;
 
+import java.util.List;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -14,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Entity
@@ -28,7 +31,7 @@ public class Offre {
     private String sujet;
     @Column
     private String description;
-
+    private String dateCreation;
     private String competences;
     @Column
     private String typeContrat;
@@ -39,6 +42,11 @@ public class Offre {
     @JsonIgnore
     Categorie categorie;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "offre")
+    private List<Question> questions;
+
+    @JsonIgnore
     public OffreDTO getOffres() {
         OffreDTO offreDTO = new OffreDTO();
         offreDTO.setId(id);
@@ -47,8 +55,10 @@ public class Offre {
         offreDTO.setSujet(sujet);
         offreDTO.setDescription(description);
         offreDTO.setTypeContrat(typeContrat);
+        offreDTO.setDateCreation(dateCreation);
         offreDTO.setCategorieId(categorie.getId());
         offreDTO.setCategorieLibelle(categorie.getLibelle());
+        offreDTO.setQuestions(questions);
         return offreDTO;
     }
 }

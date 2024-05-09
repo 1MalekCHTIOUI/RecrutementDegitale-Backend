@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,20 @@ public class OffreController {
     public ResponseEntity<List<OffreDTO>> getOffres() {
         List<OffreDTO> offres = offreService.getAllOffres();
         return new ResponseEntity<>(offres, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOffre(@PathVariable Long id) {
+        offreService.deleteOffre(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/offre/{id}")
+    public ResponseEntity<OffreDTO> updateOffre(@PathVariable Long id) {
+        OffreDTO offreDTO = offreService.updateOffre(id);
+        if (offreDTO == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(offreDTO);
     }
 
 }

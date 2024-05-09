@@ -14,7 +14,7 @@ public interface OffreService {
 
     public Optional<OffreDTO> getOffreById(Long id);
 
-    public Offre updateOffre(OffreDTO offreDTO);
+    public OffreDTO updateOffre(Long id);
 
     public void deleteOffre(Long id);
 

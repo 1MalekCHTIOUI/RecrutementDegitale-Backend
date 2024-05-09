@@ -2,26 +2,28 @@ package com.tekup.recrutement.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tekup.recrutement.dao.QuestionRepository;
+
+import com.tekup.recrutement.dto.QuestionDTO;
+
 import com.tekup.recrutement.entities.Question;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class QuestionServiceImpl implements QuestionService {
     @Autowired
-    QuestionRepository questionRepository;
+    private QuestionRepository questionRepository;
 
-    @Override
-    public Question addQuestion(Question question) {
-        return questionRepository.save(question);
-    }
+    public List<QuestionDTO> getAllQuestions() {
+        return questionRepository.findAll().stream().map(Question::getQuestions).collect(Collectors.toList());
 
-    @Override
-    public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
     }
 
     @Override
