@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.tekup.recrutement.dto.SignupDTO;
 import com.tekup.recrutement.dto.UserDTO;
@@ -20,7 +21,9 @@ public class SignupController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signupUser(@RequestBody SignupDTO signupDTO) {
-        System.out.println(signupDTO.getUserRole());
+        if (signupDTO.getEmail() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is missing");
+        }
         UserDTO createdUser = userService.createUser(signupDTO);
         if (createdUser == null) {
             return new ResponseEntity<>("User not created come again later", HttpStatus.BAD_REQUEST);

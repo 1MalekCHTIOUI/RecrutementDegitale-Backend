@@ -1,6 +1,5 @@
 package com.tekup.recrutement.entities;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,18 +23,31 @@ public class CV {
     @Column(name = "data", columnDefinition = "LONGBLOB")
     private byte[] data;
     private Date uploadDate;
+    private Date deletionDate;
     private int score;
     private List<String> skillsFound;
+    private boolean isAcceptedBySystem;
     private String specialite;
+    private boolean archived;
 
-    public CV(String fileName, String uuid, String url, byte[] bytes, Date uploadDate, int score, List<String> skillsFound, String specialite) {
+    @ManyToOne
+    private User user;
+
+    public CV(String fileName, String uuid, String url, byte[] bytes, Date uploadDate, Date deletionDate, int score,
+            List<String> skillsFound, String specialite, boolean isAcceptedBySystem, boolean archived, User user) {
         this.nom = fileName;
         this.uuid = uuid;
         this.url = url;
         this.data = bytes;
         this.uploadDate = uploadDate;
+        this.deletionDate = deletionDate;
         this.score = score;
         this.skillsFound = skillsFound;
         this.specialite = specialite;
+        this.isAcceptedBySystem = isAcceptedBySystem;
+        this.user = user;
+        this.archived = archived;
+
     }
+
 }

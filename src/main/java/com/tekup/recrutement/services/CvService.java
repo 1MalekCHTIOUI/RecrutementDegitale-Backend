@@ -9,7 +9,8 @@ import java.util.Optional;
 
 public interface CvService {
 
-    CV saveCV(MultipartFile file, List<String> keywords) throws Exception;
+    CV saveCV(MultipartFile file, Long userId, List<String> obligatoryKeywords, List<String> optionalKeywords)
+            throws Exception;
 
     Optional<CV> findByUuid(String uuid);
 
@@ -18,4 +19,12 @@ public interface CvService {
     CV getCV(Long cvId) throws Exception;
 
     ResponseEntity<?> getPDFfromCv(Long cvId);
+
+    ResponseEntity<?> deleteCV(Long cvId);
+
+    ResponseEntity<?> deleteCVs(boolean status);
+
+    // ResponseEntity<?> deleteRejectedCVsWithNoAction();
+
+    CV archiveCV(Long cvId);
 }

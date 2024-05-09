@@ -1,7 +1,12 @@
 package com.tekup.recrutement.services;
 
 import com.tekup.recrutement.dao.CvRepository;
+import com.tekup.recrutement.dto.UserDTO;
 import com.tekup.recrutement.entities.CV;
+import com.tekup.recrutement.entities.User;
+
+import jakarta.annotation.PostConstruct;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +14,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -22,25 +30,45 @@ public class CvServiceImpl implements CvService {
     @Autowired
     private CvRepository cvRepository;
 
+    @Autowired
+    private UserServiceImpl userService;
+
+    @SuppressWarnings("unchecked")
     @Override
-    public CV saveCV(MultipartFile file, List<String> keywords) throws Exception {
+    public CV saveCV(MultipartFile file, Long userId, List<String> obligatoryKeywords, List<String> optionalKeywords)
+            throws Exception {
 
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         try {
+            User user = userService.getUser(userId);
             if (fileName.contains("..")) {
                 throw new Exception("Filename contains invalid path sequence " + fileName);
             }
             String uuid = UUID.randomUUID().toString();
 
             String downloadUrl = generateDownloadUrl(uuid, fileName);
+            LocalDate today = LocalDate.now(); // Get current date
+            LocalDate oneWeekAfter = today.plusDays(7); // Add 7 days
+            Date oneWeekAfterDate = java.sql.Date.valueOf(oneWeekAfter);
+            CV cv = new CV(fileName, uuid, downloadUrl, file.getBytes(), new Date(), null, 0, null, "",
+                    false, false, user);
 
-            CV cv = new CV(fileName, uuid, downloadUrl, file.getBytes(), new Date(), 0, null, "");
-            Object score = giveScore(cv.getData(), keywords);
+            Object scoreParTech = giveScore(cv.getData(), obligatoryKeywords, optionalKeywords);
+
             Engineer eng = scoreParSpec(extractTextFromPDF(cv.getData()));
+
             cv.setSpecialite(eng.specialite);
-            cv.setScore((int) ((Map<String, Object>) score).get("score"));
-            cv.setScore(cv.getScore() + eng.score);
-            cv.setSkillsFound((List<String>) ((Map<String, Object>) score).get("keywords"));
+
+            cv.setScore((int) ((Map<String, Object>) scoreParTech).get("score"));
+
+            if (cv.getScore() > 0) {
+                cv.setScore(cv.getScore() + eng.score);
+                cv.setAcceptedBySystem(true);
+
+            } else
+                cv.setDeletionDate(oneWeekAfterDate);
+
+            cv.setSkillsFound((List<String>) ((Map<String, Object>) scoreParTech).get("keywords"));
             // if (cv.getScore() == 0) {
             // throw new Exception("Les exigences de l'offre ne sont pas remplies");
             // }
@@ -53,14 +81,85 @@ public class CvServiceImpl implements CvService {
         }
     }
 
-    private String generateDownloadUrl(String uuid, String fileName) {
-        return "http://localhost:8080/cv/download/" + uuid + "/" + fileName;
-    }
-
     @Override
     public CV getCV(Long cvId) {
         Optional<CV> cvOptional = cvRepository.findById(cvId);
         return cvOptional.orElse(null);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteCV(Long cvId) {
+        Optional<CV> cvOptional = cvRepository.findById(cvId);
+        if (cvOptional.isPresent()) {
+            cvRepository.deleteById(cvId);
+            return new ResponseEntity<>("CV deleted", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("USER NOT FOUND", HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteCVs(boolean status) {
+        try {
+            int x = cvRepository.deleteAllByIsAcceptedBySystem(status);
+            if (x > 0)
+                return ResponseEntity.ok().build();
+            else
+                return new ResponseEntity<>("CV status is not found", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error deleting CVs: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // @Transactional
+    // public ResponseEntity<?> deleteRejectedCVsWithNoAction() {
+    // try {
+    // int x =
+    // cvRepository.deleteAllByIsAcceptedBySystemAndDeletionDateNotNull(false);
+    // if (x > 0)
+    // return ResponseEntity.ok().build();
+    // else
+    // return new ResponseEntity<>("No Rejected cvs with no action found",
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>("Error deleting CVs: " + e.getMessage(),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
+
+    @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
+    @PostConstruct
+    public void checkForDeletion() {
+        List<CV> allCVs = cvRepository.findAll();
+        for (CV cv : allCVs) {
+            if (cv.isAcceptedBySystem() == false && cv.isArchived() == false
+                    && cv.getDeletionDate().before(java.sql.Date.valueOf(LocalDate.now()))) {
+                cvRepository.deleteById(cv.getId());
+            }
+        }
+    }
+
+    @Override
+    public Optional<CV> findByUuid(String uuid) {
+        return Optional.ofNullable(cvRepository.findByUuid(uuid));
+    }
+
+    @Override
+    public List<CV> getAllCVs() {
+        return cvRepository.findAll();
+    }
+
+    @Override
+    public CV archiveCV(Long cvId) {
+        Optional<CV> cvOptional = cvRepository.findById(cvId);
+        if (cvOptional.isPresent()) {
+            CV cv = cvOptional.get();
+            cv.setArchived(true);
+            return cvRepository.save(cv);
+        }
+        return null;
     }
 
     private static final HashMap<String, Integer> ENGINEERING_KEYWORDS = new HashMap<String, Integer>() {
@@ -69,6 +168,10 @@ public class CvServiceImpl implements CvService {
             put("développeur", 2);
         }
     };
+
+    private String generateDownloadUrl(String uuid, String fileName) {
+        return "http://localhost:8080/cv/download/" + uuid + "/" + fileName;
+    }
 
     private static Engineer scoreParSpec(String cvText) {
         int score = 0;
@@ -104,16 +207,6 @@ public class CvServiceImpl implements CvService {
         return ResponseEntity.notFound().build();
     }
 
-    @Override
-    public Optional<CV> findByUuid(String uuid) {
-        return Optional.ofNullable(cvRepository.findByUuid(uuid));
-    }
-
-    @Override
-    public List<CV> getAllCVs() {
-        return cvRepository.findAll();
-    }
-
     public String extractTextFromPDF(byte[] pdfData) {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfData))) {
             if (!document.isEncrypted()) {
@@ -128,14 +221,22 @@ public class CvServiceImpl implements CvService {
         }
     }
 
-    public Object giveScore(byte[] data, List<String> keywords) {
+    public Object giveScore(byte[] data, List<String> obligatoryKeywords, List<String> optionalKeywords) {
         String text = extractTextFromPDF(data);
         List<String> foundKeywords = new ArrayList<String>();
         int score = 0;
-        for (String keyword : keywords) {
+        for (String keyword : obligatoryKeywords) {
             if (text.toLowerCase().contains(keyword)) {
                 foundKeywords.add(keyword);
                 score++;
+            }
+        }
+        if (score > 0) {
+            for (String keyword : optionalKeywords) {
+                if (text.toLowerCase().contains(keyword)) {
+                    foundKeywords.add(keyword);
+                    score++;
+                }
             }
         }
         int finalScore = score;

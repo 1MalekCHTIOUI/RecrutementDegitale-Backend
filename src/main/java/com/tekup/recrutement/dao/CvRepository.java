@@ -7,4 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CvRepository extends JpaRepository<CV, Long> {
     CV findByUuid(String uuid);
+
+    int deleteAllByIsAcceptedBySystem(boolean acceptedBySystem);
+
+    int deleteAllByIsAcceptedBySystemAndDeletionDateNotNull(boolean acceptedBySystem);
 }

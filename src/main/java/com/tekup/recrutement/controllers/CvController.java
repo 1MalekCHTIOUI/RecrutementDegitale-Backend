@@ -22,17 +22,18 @@ public class CvController {
     private CvServiceImpl cvService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
         if (!Objects.equals(file.getContentType(), "application/pdf")) {
             return new ResponseEntity<>("Invalid file type. Only PDF file is allowed.", HttpStatus.BAD_REQUEST);
         }
         try {
             /* HARDCODED KEYWORDS WAITING FOR OFFER ENTITY TO BE CREATED */
 
-            final List<String> tempKeywords = Arrays.asList("java", "spring", "angular", "react", "node", "javascript",
-                    "sql", "html", "css", "github", "git");
+            final List<String> optionalKeywords = Arrays.asList("github", "git");
+            final List<String> obligatoryKeywords = Arrays.asList("java", "spring", "angular", "typescript",
+                    "javascript");
 
-            CV cv = cvService.saveCV(file, tempKeywords);
+            CV cv = cvService.saveCV(file, userId, obligatoryKeywords, optionalKeywords);
             return new ResponseEntity<>(cv, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(),
@@ -71,8 +72,28 @@ public class CvController {
     }
 
     @GetMapping("/test/{id}")
-    public String test(@PathVariable Long id) {
+    public String getTextFromPDF(@PathVariable Long id) {
         return cvService.extractTextFromPDF(cvService.getCV(id).getData());
+    }
+
+    @DeleteMapping("/{cvId}")
+    public ResponseEntity<?> deleteCV(@PathVariable Long cvId) {
+        return cvService.deleteCV(cvId);
+    }
+
+    @DeleteMapping("/status/{status}")
+    public ResponseEntity<?> deleteCV(@PathVariable("status") boolean status) {
+        return cvService.deleteCVs(status);
+    }
+
+    // @DeleteMapping("/autoDelete")
+    // public ResponseEntity<?> deleteAutoRejectedCvs() {
+    // return cvService.deleteRejectedCVsWithNoAction();
+    // }
+
+    @PutMapping("/archive/{cvId}")
+    public CV archiveCV(@PathVariable Long cvId) {
+        return cvService.archiveCV(cvId);
     }
 
 }
