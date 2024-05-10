@@ -7,32 +7,32 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tekup.recrutement.DAO.QuestionRepository;
+import com.tekup.recrutement.DAO.QuestionOffreRepository;
 
 import com.tekup.recrutement.dto.QuestionDTO;
 
-import com.tekup.recrutement.entities.Question;
+import com.tekup.recrutement.entities.QuestionOffre;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class QuestionServiceImpl implements QuestionService {
+public class QuestionOffreServiceImpl implements QuestionService {
     @Autowired
-    private QuestionRepository questionRepository;
+    private QuestionOffreRepository questionRepository;
 
     public List<QuestionDTO> getAllQuestions() {
-        return questionRepository.findAll().stream().map(Question::getQuestions).collect(Collectors.toList());
+        return questionRepository.findAll().stream().map(QuestionOffre::getQuestions).collect(Collectors.toList());
 
     }
 
     @Override
-    public Optional<Question> getQuestionById(Long id) {
+    public Optional<QuestionOffre> getQuestionById(Long id) {
         return questionRepository.findById(id);
     }
 
     @Override
-    public Question updateQuestion(Question question) {
+    public QuestionOffre updateQuestion(QuestionOffre question) {
         return questionRepository.save(question);
     }
 

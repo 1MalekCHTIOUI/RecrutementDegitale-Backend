@@ -14,7 +14,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Question {
+public class QuestionOffre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.tekup.recrutement.DAO.CategorieRepository;
 import com.tekup.recrutement.DAO.OffreRepository;
-import com.tekup.recrutement.DAO.QuestionRepository;
+import com.tekup.recrutement.DAO.QuestionOffreRepository;
 import com.tekup.recrutement.dto.OffreDTO;
 import com.tekup.recrutement.entities.Categorie;
 import com.tekup.recrutement.entities.Offre;
-import com.tekup.recrutement.entities.Question;
+import com.tekup.recrutement.entities.QuestionOffre;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,7 @@ public class OffreServiceImpl implements OffreService {
     @Autowired
     private CategorieRepository categorieRepository;
     @Autowired
-    private QuestionRepository questionRepository;
+    private QuestionOffreRepository questionRepository;
 
     @Override
     public List<OffreDTO> getAllOffres() {
@@ -48,9 +48,9 @@ public class OffreServiceImpl implements OffreService {
         offre.setQuestions(offreDTO.getQuestions());
 
         Offre savedOffre = offreRepository.save(offre);
-        List<Question> questions = offreDTO.getQuestions();
+        List<QuestionOffre> questions = offreDTO.getQuestions();
 
-        for (Question question : questions) {
+        for (QuestionOffre question : questions) {
             question.setOffre(savedOffre);
             questionRepository.save(question);
         }

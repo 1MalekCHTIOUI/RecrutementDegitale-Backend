@@ -44,7 +44,7 @@ public class Offre {
 
     @JsonIgnore
     @OneToMany(mappedBy = "offre")
-    private List<Question> questions;
+    private List<QuestionOffre> questions;
 
     @JsonIgnore
     public OffreDTO getOffres() {

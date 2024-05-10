@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import com.tekup.recrutement.dto.QuestionDTO;
-import com.tekup.recrutement.entities.Question;
+import com.tekup.recrutement.entities.QuestionOffre;
 
 public interface QuestionService {
     public List<QuestionDTO> getAllQuestions();
 
-    public Optional<Question> getQuestionById(Long id);
+    public Optional<QuestionOffre> getQuestionById(Long id);
 
-    public Question updateQuestion(Question question);
+    public QuestionOffre updateQuestion(QuestionOffre question);
 
     public void deleteQuestion(Long id);
 }

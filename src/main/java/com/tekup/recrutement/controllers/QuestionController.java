@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tekup.recrutement.dto.OffreDTO;
 import com.tekup.recrutement.dto.QuestionDTO;
-import com.tekup.recrutement.entities.Question;
+import com.tekup.recrutement.entities.QuestionOffre;
 import com.tekup.recrutement.services.QuestionService;
 
 @CrossOrigin(origins = "http://localhost:4200")
