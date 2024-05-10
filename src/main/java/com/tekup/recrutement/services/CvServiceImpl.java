@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -155,13 +156,15 @@ public class CvServiceImpl implements CvService {
     // }
     // }
 
-    @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
     @PostConstruct
     public void checkForDeletion() {
+        System.out.println("Checking for Server start deletion");
+        System.out.println("Checking for Server start deletion");
+        System.out.println("Checking for Server start deletion");
         List<CV> allCVs = cvRepository.findAll();
         for (CV cv : allCVs) {
             if (cv.isAcceptedBySystem() == false && cv.isArchived() == false
-                    && cv.getDeletionDate().before(java.sql.Date.valueOf(LocalDate.now()))) {
+                    && cv.getDeletionDate().compareTo(java.sql.Date.valueOf(LocalDate.now())) >= 0) {
                 cvRepository.deleteById(cv.getId());
             }
         }
