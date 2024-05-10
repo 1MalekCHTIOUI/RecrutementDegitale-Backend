@@ -56,4 +56,8 @@ public class OffreController {
         return ResponseEntity.ok(offreDTO);
     }
 
+    @GetMapping("/{id}")
+    public Offre getOffreById(@PathVariable Long id) {
+        return offreService.getOffreById(id);
+    }
 }

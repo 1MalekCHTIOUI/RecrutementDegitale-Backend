@@ -63,9 +63,8 @@ public class OffreServiceImpl implements OffreService {
     }
 
     @Override
-    public Optional<OffreDTO> getOffreById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOffreById'");
+    public Offre getOffreById(Long id) {
+        return offreRepository.findById(id).get();
     }
 
     @Override
