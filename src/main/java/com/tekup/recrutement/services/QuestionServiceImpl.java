@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tekup.recrutement.dao.QuestionRepository;
+import com.tekup.recrutement.DAO.QuestionRepository;
 
 import com.tekup.recrutement.dto.QuestionDTO;
 

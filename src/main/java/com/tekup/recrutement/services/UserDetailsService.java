@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.tekup.recrutement.dao.UserRepository;
+import com.tekup.recrutement.DAO.UserRepository;
 import com.tekup.recrutement.entities.User;
 
 @Service

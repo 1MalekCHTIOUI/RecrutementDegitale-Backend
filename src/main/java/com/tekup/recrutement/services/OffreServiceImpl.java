@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tekup.recrutement.dao.CategorieRepository;
-import com.tekup.recrutement.dao.OffreRepository;
-import com.tekup.recrutement.dao.QuestionRepository;
+import com.tekup.recrutement.DAO.CategorieRepository;
+import com.tekup.recrutement.DAO.OffreRepository;
+import com.tekup.recrutement.DAO.QuestionRepository;
 import com.tekup.recrutement.dto.OffreDTO;
 import com.tekup.recrutement.entities.Categorie;
 import com.tekup.recrutement.entities.Offre;
@@ -63,9 +63,8 @@ public class OffreServiceImpl implements OffreService {
     }
 
     @Override
-    public Optional<OffreDTO> getOffreById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOffreById'");
+    public Offre getOffreById(Long id) {
+        return offreRepository.findById(id).get();
     }
 
     @Override

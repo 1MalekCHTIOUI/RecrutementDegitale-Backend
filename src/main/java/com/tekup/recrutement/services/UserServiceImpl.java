@@ -6,7 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.tekup.recrutement.dao.UserRepository;
+import com.tekup.recrutement.DAO.UserRepository;
 import com.tekup.recrutement.dto.SignupDTO;
 import com.tekup.recrutement.dto.UserDTO;
 import com.tekup.recrutement.entities.User;

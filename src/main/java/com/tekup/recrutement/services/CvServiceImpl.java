@@ -1,9 +1,8 @@
 package com.tekup.recrutement.services;
 
-import com.tekup.recrutement.dao.CvRepository;
-import com.tekup.recrutement.dao.OffreRepository;
-import com.tekup.recrutement.dto.OffreDTO;
-import com.tekup.recrutement.dto.UserDTO;
+import com.tekup.recrutement.DAO.CvRepository;
+import com.tekup.recrutement.DAO.OffreRepository;
+
 import com.tekup.recrutement.entities.CV;
 import com.tekup.recrutement.entities.Offre;
 import com.tekup.recrutement.entities.User;

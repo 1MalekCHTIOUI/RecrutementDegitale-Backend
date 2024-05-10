@@ -1,7 +1,5 @@
 package com.tekup.recrutement.entities;
 
-import java.io.Serializable;
-
 import com.tekup.recrutement.dto.CategorieDTO;
 
 import jakarta.persistence.Entity;

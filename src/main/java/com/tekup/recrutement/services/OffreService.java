@@ -12,7 +12,7 @@ public interface OffreService {
 
     public Offre addOffre(OffreDTO offreDTO, Long categorieId) throws IOException;
 
-    public Optional<OffreDTO> getOffreById(Long id);
+    public Offre getOffreById(Long id);
 
     public OffreDTO updateOffre(Long id);
 

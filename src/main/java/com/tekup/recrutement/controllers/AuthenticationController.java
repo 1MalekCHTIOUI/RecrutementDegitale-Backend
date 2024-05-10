@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tekup.recrutement.dao.UserRepository;
+import com.tekup.recrutement.DAO.UserRepository;
 import com.tekup.recrutement.dto.AuthenticationRequest;
 
 import com.tekup.recrutement.entities.User;
