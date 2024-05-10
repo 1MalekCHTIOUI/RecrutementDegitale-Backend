@@ -1,6 +1,6 @@
 package com.tekup.recrutement.services;
 
-import com.tekup.recrutement.dao.CvRepository;
+import com.tekup.recrutement.DAO.CvRepository;
 import com.tekup.recrutement.entities.CV;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

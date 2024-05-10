@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tekup.recrutement.dao.VideoRepository;
+import com.tekup.recrutement.DAO.VideoRepository;
 import com.tekup.recrutement.entities.Video;
 
 @Service

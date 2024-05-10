@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tekup.recrutement.dao.CategorieRepository;
-import com.tekup.recrutement.dao.OffreRepository;
-import com.tekup.recrutement.dao.QuestionRepository;
+import com.tekup.recrutement.DAO.CategorieRepository;
+import com.tekup.recrutement.DAO.OffreRepository;
+import com.tekup.recrutement.DAO.QuestionRepository;
 import com.tekup.recrutement.dto.OffreDTO;
 import com.tekup.recrutement.entities.Categorie;
 import com.tekup.recrutement.entities.Offre;

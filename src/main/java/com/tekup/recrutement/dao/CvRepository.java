@@ -1,4 +1,4 @@
-package com.tekup.recrutement.dao;
+package com.tekup.recrutement.DAO;
 
 import com.tekup.recrutement.entities.CV;
 import org.springframework.data.jpa.repository.JpaRepository;
