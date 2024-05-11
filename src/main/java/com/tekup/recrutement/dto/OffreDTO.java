@@ -2,6 +2,7 @@ package com.tekup.recrutement.dto;
 
 import java.util.List;
 
+import com.tekup.recrutement.entities.CV;
 import com.tekup.recrutement.entities.QuestionOffre;
 
 import lombok.Data;
@@ -20,5 +21,8 @@ public class OffreDTO {
     private String categorieLibelle;
     private String dateCreation;
     private List<QuestionOffre> questions;
+    
+    //offre to cv
+    private List<CV> cvs;
 
 }

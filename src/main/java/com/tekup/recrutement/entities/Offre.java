@@ -42,6 +42,12 @@ public class Offre {
     @JsonIgnore
     Categorie categorie;
 
+    //offre to cv 
+
+    @OneToMany(mappedBy = "offre")
+    private List<CV> cvs;
+
+
     @JsonIgnore
     @OneToMany(mappedBy = "offre")
     private List<QuestionOffre> questions;
@@ -59,6 +65,10 @@ public class Offre {
         offreDTO.setCategorieId(categorie.getId());
         offreDTO.setCategorieLibelle(categorie.getLibelle());
         offreDTO.setQuestions(questions);
+
+        //Offre to cv
+        offreDTO.setCvs(cvs);
+
         return offreDTO;
     }
 
@@ -77,4 +87,6 @@ public class Offre {
         result = prime * result + ((categorie == null || categorie.getId() == null) ? 0 : categorie.getId().hashCode());
         return result;
     }
+
+
 }

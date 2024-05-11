@@ -29,10 +29,10 @@ public class OffreController {
     @Autowired
     private OffreService offreService;
 
-    @PostMapping("/addOffre/{categorieId}")
-    public ResponseEntity<Offre> ajouterOffre(@PathVariable Long categorieId, @RequestBody OffreDTO offreDTO)
+    @PostMapping("/addOffre/{categorieId}/{cvId}")
+    public ResponseEntity<Offre> ajouterOffre(@PathVariable Long categorieId, @PathVariable Long cvId, @RequestBody OffreDTO offreDTO)
             throws IOException {
-        Offre offre = offreService.addOffre(offreDTO, categorieId);
+        Offre offre = offreService.addOffre(offreDTO, categorieId, cvId);
         return ResponseEntity.status(HttpStatus.CREATED).body(offre);
     }
 

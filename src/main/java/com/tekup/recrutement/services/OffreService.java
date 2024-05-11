@@ -10,12 +10,18 @@ import com.tekup.recrutement.entities.Offre;
 public interface OffreService {
     public List<OffreDTO> getAllOffres();
 
-    public Offre addOffre(OffreDTO offreDTO, Long categorieId) throws IOException;
+    public Offre addOffre(OffreDTO offreDTO, Long categorieId, Long offreId) throws IOException;
+
+    
 
     public Offre getOffreById(Long id);
 
     public OffreDTO updateOffre(Long id);
 
     public void deleteOffre(Long id);
+
+
+
+    
 
 }

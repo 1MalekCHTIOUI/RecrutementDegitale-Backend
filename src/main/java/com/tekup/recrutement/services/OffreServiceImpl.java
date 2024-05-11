@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tekup.recrutement.DAO.CategorieRepository;
+import com.tekup.recrutement.DAO.CvRepository;
 import com.tekup.recrutement.DAO.OffreRepository;
 import com.tekup.recrutement.DAO.QuestionOffreRepository;
 import com.tekup.recrutement.dto.OffreDTO;
+import com.tekup.recrutement.entities.CV;
 import com.tekup.recrutement.entities.Categorie;
 import com.tekup.recrutement.entities.Offre;
 import com.tekup.recrutement.entities.QuestionOffre;
@@ -28,6 +30,9 @@ public class OffreServiceImpl implements OffreService {
     @Autowired
     private QuestionOffreRepository questionRepository;
 
+    @Autowired
+    private CvRepository cvRepository;
+
     @Override
     public List<OffreDTO> getAllOffres() {
         return offreRepository.findAll().stream().map(Offre::getOffres).collect(Collectors.toList());
@@ -35,8 +40,9 @@ public class OffreServiceImpl implements OffreService {
     }
 
     @Override
-    public Offre addOffre(OffreDTO offreDTO, Long categorieId) throws IOException {
+    public Offre addOffre(OffreDTO offreDTO, Long categorieId, Long cvId) throws IOException {
         Optional<Categorie> optionalCategorie = categorieRepository.findById(categorieId);
+        CV cv = cvRepository.findById(cvId).get();
         Offre offre = new Offre();
         offre.setNom(offreDTO.getNom());
         offre.setSujet(offreDTO.getSujet());
@@ -46,6 +52,10 @@ public class OffreServiceImpl implements OffreService {
         offre.setDateCreation(offre.getDateCreation());
         offre.setCategorie(optionalCategorie.get());
         offre.setQuestions(offreDTO.getQuestions());
+
+        //Offre to cv 
+        offre.getCvs().add(cv);
+        cv.setOffre(offre);
 
         Offre savedOffre = offreRepository.save(offre);
         List<QuestionOffre> questions = offreDTO.getQuestions();
