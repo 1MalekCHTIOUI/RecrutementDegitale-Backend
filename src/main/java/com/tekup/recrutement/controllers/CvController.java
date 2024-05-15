@@ -1,7 +1,10 @@
 package com.tekup.recrutement.controllers;
 
 import com.tekup.recrutement.entities.CV;
+import com.tekup.recrutement.entities.Offre;
 import com.tekup.recrutement.services.CvServiceImpl;
+import com.tekup.recrutement.services.OffreService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,8 @@ public class CvController {
 
     @Autowired
     private CvServiceImpl cvService;
+    @Autowired
+    private OffreService offreService;
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadCv(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId,
@@ -31,6 +36,13 @@ public class CvController {
             final List<String> optionalKeywords = Arrays.asList("github", "git");
 
             CV cv = cvService.saveCV(file, userId, offreId, optionalKeywords);
+            try {
+                Offre offre = offreService.getOffreById(offreId);
+                offre.getCvs().add(cv);
+
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().build();
+            }
             return new ResponseEntity<>(cv, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(),

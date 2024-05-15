@@ -36,17 +36,16 @@ public class Offre {
     @Column
     private String typeContrat;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY ,optional = false)
     @JoinColumn(name = "categorie_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     Categorie categorie;
 
-    //offre to cv 
-
-    @OneToMany(mappedBy = "offre")
+    // offre to cv
+    @JsonIgnore
+    @OneToMany(mappedBy = "offre", fetch = FetchType.LAZY)
     private List<CV> cvs;
-
 
     @JsonIgnore
     @OneToMany(mappedBy = "offre")
@@ -66,7 +65,7 @@ public class Offre {
         offreDTO.setCategorieLibelle(categorie.getLibelle());
         offreDTO.setQuestions(questions);
 
-        //Offre to cv
+        // Offre to cv
         offreDTO.setCvs(cvs);
 
         return offreDTO;
@@ -87,6 +86,5 @@ public class Offre {
         result = prime * result + ((categorie == null || categorie.getId() == null) ? 0 : categorie.getId().hashCode());
         return result;
     }
-
 
 }

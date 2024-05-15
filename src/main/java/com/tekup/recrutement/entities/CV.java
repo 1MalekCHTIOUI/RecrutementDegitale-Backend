@@ -34,10 +34,12 @@ public class CV {
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "offre_id")
     private Offre offre;
 
     public CV(String fileName, String uuid, String url, byte[] bytes, Date uploadDate, Date deletionDate, int score,
-            List<String> skillsFound, String specialite, boolean isAcceptedBySystem, boolean archived, User user, Offre offre) {
+            List<String> skillsFound, String specialite, boolean isAcceptedBySystem, boolean archived, User user,
+            Offre offre) {
         this.nom = fileName;
         this.uuid = uuid;
         this.url = url;
